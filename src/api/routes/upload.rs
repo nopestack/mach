@@ -107,6 +107,7 @@ where
     Ok(data_hash)
 }
 
+#[allow(unused)]
 fn path_is_valid(path: &Path) -> bool {
     let mut components = path.components().peekable();
 

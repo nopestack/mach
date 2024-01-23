@@ -23,6 +23,11 @@ pub async fn exec() -> anyhow::Result<()> {
         commands::SubCmd::Serve(args) => {
             commands::serve::exec(args).await
         }
+
+        commands::SubCmd::Call(args) => {
+            commands::call::exec(args).await
+        }
+
         _ => {
             anyhow::bail!("Not supported yet");
         } 

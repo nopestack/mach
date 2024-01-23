@@ -1,3 +1,4 @@
+pub mod call;
 pub mod serve;
 
 #[derive(clap::Subcommand, Debug)]
@@ -22,19 +23,6 @@ pub enum SubCmd {
 
     /// Manage Mach's configuration
     Config(config::ConfigCmd),
-}
-
-mod call {
-    use std::net::SocketAddr;
-
-    use crate::storage::FnId;
-
-    #[derive(Debug, clap::Args)]
-    pub struct CallCmd {
-        #[clap(long, default_value = "0.0.0.0:3401")]
-        pub server_addr: SocketAddr,
-        pub fn_id: FnId,
-    }
 }
 
 mod config {
