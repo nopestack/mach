@@ -5,8 +5,8 @@ Mach is a CLI tool designed to run WebAssembly modules blazingly fast at mach sp
 It can run a server with a REST API to upload and run a FaaS platform locally and it can also execute arbitrary WebAssembly modules as one-off tasks.
 
 ## Features
-- **Fast and Efficient Execution**: Leverages the speed and lightweight nature of WASM for optimal performance.
-- **Easy Deployment**: Simple CLI for deploying and managing WASM modules.
+- **Fast**: Leverages the speed and lightweight nature of WASM for optimal performance.
+- **Easy to Use**: Simple CLI for deploying and managing WASM modules.
 - **Scalable**: Designed to handle varying function calls concurrently, making it suitable for both small and large-scale applications.
 - **Secure Isolation**: Mach runs each WASM module in isolated environments for enhanced security.
 
@@ -33,3 +33,6 @@ The executable will be at
 ```
 target/release/mach
 ```
+
+### Roadmap
+TBD
