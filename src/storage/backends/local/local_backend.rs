@@ -1,6 +1,5 @@
 use crate::storage::{FnEntry, FnId, FnStorage};
 
-use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 use crate::storage::error::StorageError;
@@ -56,6 +55,7 @@ impl LocalBackend {
     }
 }
 
+#[allow(unused)]
 fn suffix_wasm_if_needed(name: &str) -> String {
     if name.ends_with(".wasm") {
         name.to_string()

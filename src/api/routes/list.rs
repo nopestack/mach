@@ -1,4 +1,4 @@
-use axum::{extract::State, response::IntoResponse, Json};
+use axum::{extract::State, Json};
 
 use crate::{
     api::{ApiError, SharedServerState},

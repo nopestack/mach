@@ -20,18 +20,20 @@ pub enum SubCmd {
     /// Deletes a function from the server
     Delete(client::DeleteCmd),
 
-    /// Manage the CLI's configuration
+    /// Manage Mach's configuration
     Config(config::ConfigCmd),
 }
 
 mod call {
     use std::net::SocketAddr;
 
+    use crate::storage::FnId;
+
     #[derive(Debug, clap::Args)]
     pub struct CallCmd {
         #[clap(long, default_value = "0.0.0.0:3401")]
         pub server_addr: SocketAddr,
-        pub name: String,
+        pub fn_id: FnId,
     }
 }
 

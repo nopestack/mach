@@ -6,7 +6,6 @@ use crate::{
         API_VERSION,
     },
     exec::task::TaskResult,
-    storage::FnEntry,
 };
 
 use super::routes::{get::GetResponse, list::ListResponse};

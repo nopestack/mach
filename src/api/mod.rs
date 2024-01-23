@@ -8,42 +8,19 @@ pub use server::*;
 
 #[cfg(test)]
 mod tests {
-    use std::{net::SocketAddr, path::PathBuf};
+    use std::net::SocketAddr;
 
     use super::*;
     use crate::{
         api::client::Client as ApiClient,
-        api::API_VERSION,
         exec::wasm_task_exec::WasmTaskExecutor,
-        storage::{
-            hash_fn_content,
-            test_utils::{
-                load_test_wasm_module, read_file_to_bytes, setup_mock_local_storage_backend,
-                TEST_WASM_NAME,
-            },
-            FnEntry, FnStorage,
-        },
+        storage::test_utils::{read_file_to_bytes, setup_mock_local_storage_backend},
     };
 
     async fn setup_server() -> Server {
         let task_exec = WasmTaskExecutor::new();
 
         let storage = setup_mock_local_storage_backend().await;
-        // let fn_data = load_test_wasm_module().await;
-        // let fn_id = uuid::Uuid::new_v4();
-        // let fn_name = TEST_WASM_NAME.to_string();
-        // let fn_hash = hash_fn_content(&fn_data);
-        // let fn_path = PathBuf::from(TEST_WASM_NAME);
-        //
-        // let fn_entry = FnEntry {
-        //     id: fn_id,
-        //     name: fn_name,
-        //     path: fn_path,
-        //     hash: fn_hash,
-        // };
-        //
-        // storage.save(fn_entry).await.unwrap();
-
         let addr = SocketAddr::from(([127, 0, 0, 1], 0));
 
         Server::new(addr, task_exec, storage)
