@@ -1,5 +1,5 @@
-# Tiny Wasm functions, running at mach speed.
-Mach is a CLI tool designed to run WebAssembly modules. 
+# Mach
+Mach is a CLI tool designed to run WebAssembly modules blazingly fast at mach speed. 
 
 ## Overview
 It can run a server with a REST API to upload and run a FaaS platform locally and it can also execute arbitrary WebAssembly modules as one-off tasks.
@@ -13,7 +13,7 @@ It can run a server with a REST API to upload and run a FaaS platform locally an
 ## Installation and Running
 
 ### Prerequisites
-- Rust (latest stable version)
+- Rust (latest nightly version)
 
 ### Installation from Source
 To install Mach from source, follow these steps:
