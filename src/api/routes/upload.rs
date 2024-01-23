@@ -1,4 +1,8 @@
-use axum::extract::{Multipart, State};
+use axum::{
+    extract::{Multipart, State},
+    Json,
+};
+use serde::{Deserialize, Serialize};
 
 use crate::{
     api::{ApiError, SharedServerState},
@@ -12,12 +16,22 @@ use std::{io, path::Path};
 use tokio::{fs::File, io::BufWriter};
 use tokio_util::io::StreamReader;
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UploadResponse {
+    /// Unique identifier for the function
+    pub id: uuid::Uuid,
+    /// Display name for the function
+    pub name: String,
+    /// Cecksum of the function file
+    pub hash: String,
+}
+
 /// Handler that accepts a multipart form upload and streams each field to a file.
 #[tracing::instrument]
 pub async fn upload_handler<F, T>(
     State(state): State<SharedServerState<F, T>>,
     mut multipart: Multipart,
-) -> Result<(), ApiError>
+) -> Result<Json<UploadResponse>, ApiError>
 where
     F: FnStorage + 'static,
     T: TaskExecutor + 'static,
@@ -45,10 +59,23 @@ where
             hash: fn_hash,
         };
 
-        state.write().await.storage_backend.save(fn_entry).await?;
+        let response = UploadResponse {
+            id: fn_entry.id,
+            name: fn_entry.name.clone(),
+            hash: hex::encode(fn_entry.hash.clone()),
+        };
+
+        state
+            .write()
+            .await
+            .storage_backend
+            .save(fn_entry.clone())
+            .await?;
+
+        return Ok(Json(response));
     }
 
-    Ok(())
+    Err(ApiError::Other("received no files".to_string()))
 }
 
 async fn stream_to_file<S, E>(path: &Path, file_name: &str, stream: S) -> anyhow::Result<Vec<u8>>

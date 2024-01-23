@@ -35,4 +35,8 @@ target/release/mach
 ```
 
 ### Roadmap
-TBD
+- Improved test coverage
+- TLS/SSL support
+- IPFS storage backend
+- Inter-function calls
+- Inter server function calls

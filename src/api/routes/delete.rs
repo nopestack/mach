@@ -3,12 +3,12 @@ use axum::extract::{Path, State};
 use crate::{
     api::{ApiError, SharedServerState},
     exec::TaskExecutor,
-    storage::FnStorage,
+    storage::{FnId, FnStorage},
 };
 
 #[tracing::instrument]
 pub async fn delete_handler<F, T>(
-    Path(fn_id): Path<String>,
+    Path(fn_id): Path<FnId>,
     State(state): State<SharedServerState<F, T>>,
 ) -> Result<(), ApiError>
 where

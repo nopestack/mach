@@ -1,4 +1,4 @@
-use crate::storage::{FnEntry, FnStorage};
+use crate::storage::{FnEntry, FnId, FnStorage};
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -24,6 +24,36 @@ impl LocalBackend {
 
         Ok(Self { path, db })
     }
+
+    async fn find(&self, fn_id: &FnId) -> Result<FnEntry> {
+        let found = self
+            .db
+            .get(fn_id)
+            .map_err(|err| StorageError::NotFound(err.to_string()))?
+            .ok_or(StorageError::NotFound(fn_id.to_string()))?;
+
+        let fn_entry = bincode::deserialize::<FnEntry>(&found.to_vec())
+            .map_err(|err| StorageError::Other(err.to_string()))?;
+
+        Ok(fn_entry)
+    }
+
+    async fn delete_entry(&mut self, fn_id: &FnId) -> Result<()> {
+        let removed = self
+            .db
+            .remove(fn_id)
+            .map_err(|err| StorageError::NotFound(err.to_string()))?
+            .ok_or(StorageError::NotFound(fn_id.to_string()))?;
+
+        let fn_entry = bincode::deserialize::<FnEntry>(&removed.to_vec())
+            .map_err(|err| StorageError::Other(err.to_string()))?;
+
+        tokio::fs::remove_file(self.path.join(fn_entry.path))
+            .await
+            .map_err(|err| StorageError::Other(err.to_string()))?;
+
+        Ok(())
+    }
 }
 
 fn suffix_wasm_if_needed(name: &str) -> String {
@@ -39,21 +69,10 @@ impl FnStorage for LocalBackend {
         &self.path
     }
 
-    async fn load(&self, name: &str) -> Result<Vec<u8>> {
-        // TODO: read fn path from db
-        // return fn file read
+    async fn load(&self, fn_id: &uuid::Uuid) -> Result<Vec<u8>> {
+        let fn_entry = self.find(fn_id).await?;
 
-        let name = suffix_wasm_if_needed(name);
-
-        let found = tokio::fs::try_exists(&name)
-            .await
-            .map_err(|_| StorageError::NotFound(name.clone()))?;
-
-        if !found {
-            return Err(StorageError::NotFound(name));
-        }
-
-        let file_data = tokio::fs::read(self.path.join(name))
+        let file_data = tokio::fs::read(self.path.join(fn_entry.path))
             .await
             .map_err(|err| StorageError::Other(err.to_string()))?;
 
@@ -72,16 +91,10 @@ impl FnStorage for LocalBackend {
         Ok(())
     }
 
-    async fn delete(&self, name: &str) -> Result<()> {
-        let found = tokio::fs::try_exists(name)
-            .await
-            .map_err(|_| StorageError::NotFound(name.to_string()))?;
+    async fn delete(&mut self, fn_id: &FnId) -> Result<()> {
+        self.delete_entry(fn_id).await?;
 
-        if !found {
-            return Err(StorageError::NotFound(name.to_string()));
-        }
-
-        todo!()
+        Ok(())
     }
 
     async fn list(&self) -> Result<Vec<FnEntry>> {

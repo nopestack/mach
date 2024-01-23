@@ -1,8 +1,12 @@
 use std::net::SocketAddr;
 
 use crate::{
-    api::{routes::call::CallRequest, API_VERSION},
+    api::{
+        routes::{call::CallRequest, upload::UploadResponse},
+        API_VERSION,
+    },
     exec::task::TaskResult,
+    storage::FnEntry,
 };
 
 use super::routes::{get::GetResponse, list::ListResponse};
@@ -30,7 +34,7 @@ impl Client {
     }
 
     /// Gets detailed information about a function
-    pub async fn get(&self, addr: SocketAddr, fn_id: &str) -> anyhow::Result<GetResponse> {
+    pub async fn get(&self, addr: SocketAddr, fn_id: &uuid::Uuid) -> anyhow::Result<GetResponse> {
         let url = format!("http://{addr}/{API_VERSION}/functions/{fn_id}");
 
         let response = self.r_client.get(url).send().await?;
@@ -43,12 +47,12 @@ impl Client {
     pub async fn call(
         &mut self,
         addr: SocketAddr,
-        fn_name: &str,
+        id: &uuid::Uuid,
         args: Vec<u8>,
     ) -> anyhow::Result<TaskResult> {
-        let call_url = format!("http://{addr}/{API_VERSION}/functions/{fn_name}");
+        let call_url = format!("http://{addr}/{API_VERSION}/functions/{id}");
         let call_request = CallRequest {
-            function: fn_name.to_string(),
+            id: id.to_owned(),
             args,
         };
 
@@ -70,7 +74,7 @@ impl Client {
         addr: SocketAddr,
         fn_name: &str,
         fn_data: Vec<u8>,
-    ) -> anyhow::Result<()> {
+    ) -> anyhow::Result<UploadResponse> {
         let form = reqwest::multipart::Form::new();
         let part = reqwest::multipart::Part::bytes(fn_data)
             .file_name(fn_name.to_string())
@@ -80,18 +84,21 @@ impl Client {
 
         let upload_url = format!("http://{addr}/{API_VERSION}/functions");
 
-        self.r_client
+        let raw_response = self
+            .r_client
             .post(upload_url)
             .multipart(form)
             .send()
             .await?;
 
-        Ok(())
+        let response = raw_response.json::<UploadResponse>().await?;
+
+        Ok(response)
     }
 
     /// Deletes a function from the server
-    pub async fn delete(&mut self, addr: SocketAddr, fn_name: &str) -> anyhow::Result<()> {
-        let delete_url = format!("http://{addr}/{API_VERSION}/functions/{fn_name}");
+    pub async fn delete(&mut self, addr: SocketAddr, fn_id: &uuid::Uuid) -> anyhow::Result<()> {
+        let delete_url = format!("http://{addr}/{API_VERSION}/functions/{fn_id}");
 
         self.r_client.delete(delete_url).send().await?;
 

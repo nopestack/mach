@@ -18,7 +18,7 @@ pub struct GetResponse {
 
 #[tracing::instrument]
 pub async fn get_handler<F, T>(
-    Path(fn_id): Path<String>,
+    Path(fn_id): Path<uuid::Uuid>,
     State(state): State<SharedServerState<F, T>>,
 ) -> Result<Json<GetResponse>, ApiError>
 where

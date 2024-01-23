@@ -9,7 +9,7 @@ use crate::storage::FnStorage;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct CallRequest {
-    pub function: String,
+    pub id: uuid::Uuid,
     pub args: Vec<u8>,
 }
 
@@ -23,7 +23,7 @@ where
     T: TaskExecutor + 'static,
 {
     let mut state = state.write().await;
-    let module = state.storage_backend.load(&req.function).await?;
+    let module = state.storage_backend.load(&req.id).await?;
 
     let task = Task {
         id: uuid::Uuid::new_v4(),
