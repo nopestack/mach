@@ -81,9 +81,6 @@ impl FnStorage for LocalBackend {
             return Err(StorageError::NotFound(name.to_string()));
         }
 
-        dbg!("delete", name);
-        // tokio::fs::remove_file(name)
-
         todo!()
     }
 
