@@ -31,7 +31,7 @@ impl LocalBackend {
             .map_err(|err| StorageError::NotFound(err.to_string()))?
             .ok_or(StorageError::NotFound(fn_id.to_string()))?;
 
-        let fn_entry = bincode::deserialize::<FnEntry>(&found.to_vec())
+        let fn_entry = bincode::deserialize::<FnEntry>(&found)
             .map_err(|err| StorageError::Other(err.to_string()))?;
 
         Ok(fn_entry)
@@ -44,7 +44,7 @@ impl LocalBackend {
             .map_err(|err| StorageError::NotFound(err.to_string()))?
             .ok_or(StorageError::NotFound(fn_id.to_string()))?;
 
-        let fn_entry = bincode::deserialize::<FnEntry>(&removed.to_vec())
+        let fn_entry = bincode::deserialize::<FnEntry>(&removed)
             .map_err(|err| StorageError::Other(err.to_string()))?;
 
         tokio::fs::remove_file(self.path.join(fn_entry.path))
