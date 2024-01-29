@@ -24,8 +24,29 @@ pub async fn exec() -> anyhow::Result<()> {
             commands::serve::exec(args).await
         }
 
+        commands::SubCmd::Upload(args) => {
+            commands::upload::exec(args).await
+        }
+
+        commands::SubCmd::Get(args) => {
+            commands::get::exec(args).await
+        }
+
+        commands::SubCmd::List(args) => {
+            commands::list::exec(args).await
+        }
+
         commands::SubCmd::Call(args) => {
             commands::call::exec(args).await
+        }
+
+
+        commands::SubCmd::Delete(args) => {
+            commands::delete::exec(args).await
+        }
+
+        commands::SubCmd::Config(args) => {
+            commands::config::exec(args).await
         }
 
         _ => {

@@ -14,6 +14,7 @@ pub struct CallCmd {
     pub args: String,
 }
 
+#[tracing::instrument(skip(args))]
 pub async fn exec(args: CallCmd) -> anyhow::Result<()> {
     let mut api_client = crate::api::client::Client::new()?;
     let server_addr = args.server_addr;

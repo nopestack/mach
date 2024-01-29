@@ -1,5 +1,10 @@
 pub mod call;
+pub mod config;
+pub mod delete;
+pub mod get;
+pub mod list;
 pub mod serve;
+pub mod upload;
 
 #[derive(clap::Subcommand, Debug)]
 pub enum SubCmd {
@@ -7,59 +12,20 @@ pub enum SubCmd {
     Serve(serve::ServeCmd),
 
     /// Lists all available functions in the server
-    List(client::ListCmd),
+    List(list::ListCmd),
 
     /// Gets detailed information about a function
-    Get(client::GetCmd),
+    Get(get::GetCmd),
 
     /// Calls a single WASM function
     Call(call::CallCmd),
 
     /// Upload a function to the server
-    Upload(client::UploadCmd),
+    Upload(upload::UploadCmd),
 
     /// Deletes a function from the server
-    Delete(client::DeleteCmd),
+    Delete(delete::DeleteCmd),
 
     /// Manage Mach's configuration
     Config(config::ConfigCmd),
-}
-
-mod config {
-    #[derive(Debug, clap::Args)]
-    pub struct ConfigCmd {
-        pub path: String,
-    }
-}
-
-mod client {
-    use std::{net::SocketAddr, path::PathBuf};
-
-    #[derive(Debug, clap::Args)]
-    pub struct ListCmd {
-        #[clap(long, default_value = "0.0.0.0:3401")]
-        pub server_addr: SocketAddr,
-    }
-
-    #[derive(Debug, clap::Args)]
-    pub struct GetCmd {
-        #[clap(long, default_value = "0.0.0.0:3401")]
-        pub server_addr: SocketAddr,
-        pub fn_id: String,
-    }
-
-    #[derive(Debug, clap::Args)]
-    pub struct UploadCmd {
-        #[clap(long, default_value = "0.0.0.0:3401")]
-        pub server_addr: SocketAddr,
-        pub fn_id: String,
-        pub fn_file: PathBuf,
-    }
-
-    #[derive(Debug, clap::Args)]
-    pub struct DeleteCmd {
-        #[clap(long, default_value = "0.0.0.0:3401")]
-        pub server_addr: SocketAddr,
-        pub fn_id: String,
-    }
 }
